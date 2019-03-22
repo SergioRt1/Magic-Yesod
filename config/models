@@ -20,7 +20,7 @@ Card
     name Text
     description Text
     expansion Text
-    defence Int Maybe
+    defense Int Maybe
     attack Int Maybe
     color Text
     mana Int

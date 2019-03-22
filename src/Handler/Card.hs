@@ -12,11 +12,19 @@ import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3)
 --Aform From Entity Card
 cardForm :: Maybe Card -> AForm Handler Card
 cardForm   card = Card 
-    <$> areq textField "name" (cardName <$> card)
-    <*> areq textField "description" (cardDescription <$> card) 
-    <*> areq textField "expansion" (cardExpansion <$> card) 
-    <*> aopt intField "Defence" (cardExpansion <$> card)
-    <*> aopt intField "Attack" (cardExpansion <$> card)  
+    <$> areq textField "Name" (cardName <$> card)
+    <*> areq textField "Description" (cardDescription <$> card)
+    <*> areq textField "Expansion" (cardExpansion <$> card)
+    <*> aopt defenseField "Defense" (cardDefense <$> card)
+    <*> aopt attackField "Attack" (cardAttack <$> card)
+    <*> areq textField "Color" (cardColor <$> card)
+    <*> areq intField "Mana" (cardMana <$> card)
+    where
+        errorMessage :: Text
+        errorMessage = "There are no such powerful cards, be realistic!"
+        defenseField = checkBool (<= 7) errorMessage intField
+        attackField = checkBool (<= 7) errorMessage intField
+
 
 --CRUD 
 --Create
