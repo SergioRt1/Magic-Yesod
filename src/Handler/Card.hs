@@ -17,13 +17,15 @@ cardForm   card = Card
     <*> areq textField "Expansion" (cardExpansion <$> card)
     <*> aopt defenseField "Defense" (cardDefense <$> card)
     <*> aopt attackField "Attack" (cardAttack <$> card)
-    <*> areq textField "Color" (cardColor <$> card)
+    <*> areq (selectFieldList colors) "Color" (cardColor <$> card)
     <*> areq intField "Mana" (cardMana <$> card)
     where
         errorMessage :: Text
         errorMessage = "There are no such powerful cards, be realistic!"
         defenseField = checkBool (<= 7) errorMessage intField
         attackField = checkBool (<= 7) errorMessage intField
+        colors :: [(Text, Text)]
+        colors = [("White - Plains", "White - Plains"),("Red - Mountain", "Red - Mountain"), ("Blue - Island", "Blue - Island"), ("Green - Forest", "Green - Forest"), ("Black - Swamps", "Black - Swamps")]
 
 
 --CRUD 
