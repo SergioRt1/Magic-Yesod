@@ -11,6 +11,8 @@
 
 /comments CommentR POST
 
+/search SearchR GET POST
+
 /profile ProfileR GET
 
 /createCard CreateCardR GET POST

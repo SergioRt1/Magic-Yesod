@@ -35,7 +35,7 @@ getCreateCardR = do
                (widget, encoding) <- generateFormPost $ renderBootstrap3 BootstrapBasicForm $ cardForm Nothing
                defaultLayout $ do
                     let actionR = CreateCardR                          
-                    $(widgetFile "Card/CardCreate") 
+                    $(widgetFile "Card/Form")
 
 postCreateCardR :: Handler Html
 postCreateCardR = do
@@ -46,5 +46,5 @@ postCreateCardR = do
                                 redirect HomeR
                     _ -> defaultLayout $ do
                         let actionR = CreateCardR
-                        $(widgetFile "Card/CardCreate")
+                        $(widgetFile "Card/Form")
 
