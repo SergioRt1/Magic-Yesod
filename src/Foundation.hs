@@ -168,6 +168,8 @@ instance Yesod App where
     isAuthorized (StaticR _) _ = return Authorized
     isAuthorized CreateCardR  _ = return Authorized
     isAuthorized SearchR  _ = return Authorized
+    isAuthorized CardsJsonR  _ = return Authorized
+    isAuthorized (CardJsonR _)  _ = return Authorized
 
     -- the profile route requires that the user is authenticated, so we
     -- delegate to that function

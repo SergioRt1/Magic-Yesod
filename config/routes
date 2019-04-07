@@ -11,8 +11,10 @@
 
 /comments CommentR POST
 
-/search SearchR GET POST
-
 /profile ProfileR GET
 
 /createCard CreateCardR GET POST
+/search SearchR GET POST
+
+/api/card CardsJsonR GET POST
+/api/card/#CardId CardJsonR GET PUT DELETE
