@@ -18,6 +18,7 @@ import Control.Monad.Logger (LogSource)
 
 -- Used only when in "auth-dummy-login" setting is enabled.
 import Yesod.Auth.Dummy
+import Yesod.Auth.OAuth2.Google
 
 import Yesod.Auth.OpenId    (authOpenId, IdentifierType (Claimed))
 import Yesod.Default.Util   (addStaticContentExternal)
@@ -47,6 +48,14 @@ data MenuItem = MenuItem
 data MenuTypes
     = NavbarLeft MenuItem
     | NavbarRight MenuItem
+
+-- Replace with Google client ID.
+clientId :: Text
+clientId = "470222495413-np159a5epfc31afg4bm0mk25fjf07dvf.apps.googleusercontent.com"
+
+-- Replace with Google secret ID.
+clientSecret :: Text
+clientSecret = "6Balzv9poo6IXeCI6prq7HnZ"
 
 -- This is where we define all of the routes in our application. For a full
 -- explanation of the syntax, please see:
@@ -258,13 +267,12 @@ instance YesodAuth App where
             Nothing -> Authenticated <$> insert User
                 { userIdent = credsIdent creds
                 , userPassword = Nothing
+                , userPerms = [] --New required line
                 }
 
     -- You can add other plugins like Google Email, email or OAuth here
     authPlugins :: App -> [AuthPlugin App]
-    authPlugins app = [authOpenId Claimed []] ++ extraAuthPlugins
-        -- Enable authDummy login if enabled.
-        where extraAuthPlugins = [authDummy | appAuthDummyLogin $ appSettings app]
+    authPlugins app = [oauth2GoogleScoped ["email", "profile"] clientId clientSecret]
 
 -- | Access function to determine if a user is logged in.
 isAuthenticated :: Handler AuthResult
@@ -273,6 +281,19 @@ isAuthenticated = do
     return $ case muid of
         Nothing -> Unauthorized "You must login to access this page"
         Just _ -> Authorized
+
+authorizedForPrivileges :: [Privileges] -> Handler AuthResult
+authorizedForPrivileges perms = do
+    mu <- maybeAuth
+    return $ case mu of
+        Nothing -> Unauthorized "You must login to access this page"
+        Just u@(Entity userId user) ->
+        if hasPrivileges u perms
+            then Authorized
+            else Unauthorized "Not enought priviledges"
+
+hasPrivileges :: Entity User -> [Privileges] -> Bool
+hasPrivileges (Entity _ user) perms = null (perms L.\\ userPerms user)
 
 instance YesodAuthPersist App
 

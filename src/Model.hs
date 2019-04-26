@@ -42,3 +42,11 @@ instance FromJSON Card where
             <*> card .: "color"
             <*> card .: "mana"
         parseJSON _ = mzero
+
+data Privileges 
+    = PrvCreateCard
+    | PrvSearch
+    | PrvAPI
+    deriving (Show,Read,Eq)
+
+derivePersistField "Privileges"

@@ -5,6 +5,7 @@ User
     ident Text
     password Text Maybe
     UniqueUser ident
+    perms [Privileges]
     deriving Typeable
 Email
     email Text
@@ -24,4 +25,3 @@ Card
     attack Int Maybe
     color Text
     mana Int
-
