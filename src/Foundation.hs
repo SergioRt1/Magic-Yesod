@@ -23,6 +23,7 @@ import Yesod.Auth.OAuth2.Google
 import Yesod.Auth.OpenId    (authOpenId, IdentifierType (Claimed))
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
+import qualified Data.List as L
 import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
@@ -175,14 +176,15 @@ instance Yesod App where
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
-    isAuthorized CreateCardR  _ = return Authorized
-    isAuthorized SearchR  _ = return Authorized
-    isAuthorized CardsJsonR  _ = return Authorized
-    isAuthorized (CardJsonR _)  _ = return Authorized
 
     -- the profile route requires that the user is authenticated, so we
     -- delegate to that function
     isAuthorized ProfileR _ = isAuthenticated
+    isAuthorized SearchR _ = authorizedForPrivileges [PrvSearch]
+    isAuthorized CreateCardR _ = authorizedForPrivileges [PrvCreateCard]
+
+    isAuthorized CardsJsonR _ = authorizedForPrivileges [PrvAPI]
+    isAuthorized (CardJsonR _) _ = authorizedForPrivileges [PrvAPI]
 
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
@@ -267,7 +269,7 @@ instance YesodAuth App where
             Nothing -> Authenticated <$> insert User
                 { userIdent = credsIdent creds
                 , userPassword = Nothing
-                , userPerms = [] --New required line
+                , userPerms = [PrvSearch] --New required line
                 }
 
     -- You can add other plugins like Google Email, email or OAuth here
@@ -286,9 +288,9 @@ authorizedForPrivileges :: [Privileges] -> Handler AuthResult
 authorizedForPrivileges perms = do
     mu <- maybeAuth
     return $ case mu of
-        Nothing -> Unauthorized "You must login to access this page"
-        Just u@(Entity userId user) ->
-        if hasPrivileges u perms
+     Nothing -> Unauthorized "You must login to access this page"
+     Just u@(Entity userId user) ->
+       if hasPrivileges u perms
             then Authorized
             else Unauthorized "Not enought priviledges"
 

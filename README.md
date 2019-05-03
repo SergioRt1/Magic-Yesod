@@ -8,6 +8,19 @@ createdb magic
 createdb magic_test
 ```
 
+To make an user Admin run the following command in postgresql
+
+```
+UPDATE public."user" SET perms = '["sPrvSearch","sPrvCreateCard","sPrvAPI"]'
+WHERE id = {userID};
+```
+
+if you want to know what is the userID make a select query and get one
+
+```
+SELELCT * FROM public."user";
+```
+
 ## Haskell Setup
 
 1. If you haven't already, [install Stack](https://haskell-lang.org/get-started)
