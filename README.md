@@ -18,7 +18,7 @@ WHERE id = {userID};
 if you want to know what is the userID make a select query and get one
 
 ```
-SELELCT * FROM public."user";
+SELECT * FROM public."user";
 ```
 
 ## Haskell Setup
